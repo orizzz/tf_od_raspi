@@ -1,13 +1,14 @@
 
 import cv2
 from tflite_runtime.interpreter import Interpreter
-from utility import *
+from object_detection import detect_objects
 from config import Config
+from app.utility import *
 
 CAMERA_WIDTH = Config.CAMERA_WIDTH
 CAMERA_HEIGHT = Config.CAMERA_HEIGHT
 
-def main():
+def detect():
     labels = load_labels(Config.LABEL)
     interpreter = Interpreter(Config.INTERPRETER)
     interpreter.allocate_tensors()
@@ -18,7 +19,6 @@ def main():
         ret, frame = cap.read()
         img = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), (320,320))
         res = detect_objects(interpreter, img, 0.8)
-        print(res)
 
         for result in res:
             ymin, xmin, ymax, xmax = result['bounding_box']
@@ -35,6 +35,3 @@ def main():
         if cv2.waitKey(10) & 0xFF ==ord('q'):
             cap.release()
             cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    main()
