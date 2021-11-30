@@ -10,3 +10,7 @@ class Config(object):
 
     CAMERA_WIDTH = env.str("CAMERA_WIDTH", default=640)
     CAMERA_HEIGHT = env.str("CAMERA_HEIGHT", default=480)
+
+    SOURCE = env.str("SOURCE")
+    OUTPUT = env.str("OUTPUT")
+    LINE = env.str("LINE")
