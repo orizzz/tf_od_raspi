@@ -14,7 +14,7 @@ class Config(object):
     IOU = env.str("IOU", default=0.5)
     THERSHOLD = env.str("THERSHOLD", default=0.5)
 
-    SOURCE = env.str("SOURCE")
-    OUTPUT = env.str("OUTPUT")
+    SOURCE = env.str("SOURCE", default=0)
+    OUTPUT = env.str("OUTPUT", default=None)
     LINE = env.str("LINE")
     DETECTOR = env.str("DETECTOR", default="TF")
