@@ -3,10 +3,9 @@ import tensorflow as tf
 import cv2
 from config import Config
 
-input_size = int(Config.INPUT_SIZE)
+input_size = Config.INPUT_SIZE
 
-
-def detect_objects(interpreter, image, threshold):
+def detect_objects(interpreter, image, threshold=0.5, iou=0.45):
     interpreter.allocate_tensors()
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
@@ -19,11 +18,7 @@ def detect_objects(interpreter, image, threshold):
     interpreter.set_tensor(input_details[0]['index'], image_data)
     interpreter.invoke()
     pred = [interpreter.get_tensor(output_details[i]['index']) for i in range(len(output_details))]
-    # if FLAGS.model == 'yolov3' and FLAGS.tiny == True:
-    #     boxes, pred_conf = filter_boxes(pred[1], pred[0], score_threshold=0.25,
-    #                                     input_shape=tf.constant([input_size, input_size]))
-    # else:
-    boxes, pred_conf = filter_boxes(pred[0], pred[1], score_threshold=0.25,
+    boxes, pred_conf = filter_boxes(pred[0], pred[1], score_threshold=threshold,
                                     input_shape=tf.constant([input_size, input_size]))
     # print(boxes, pred_conf)
 
@@ -33,8 +28,8 @@ def detect_objects(interpreter, image, threshold):
             pred_conf, (tf.shape(pred_conf)[0], -1, tf.shape(pred_conf)[-1])),
         max_output_size_per_class=50,
         max_total_size=50,
-        iou_threshold= float(Config.IOU),
-        score_threshold= float(Config.THERSHOLD)
+        iou_threshold= iou,
+        score_threshold= threshold
     )
     return boxes, scores, classes, valid_detections
 
