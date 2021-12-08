@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import cv2
 from config import Config
 
 input_size = Config.INPUT_SIZE
