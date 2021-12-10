@@ -1,7 +1,9 @@
 
 import cv2, time
 from tflite_runtime.interpreter import Interpreter
-from app.yolo_tiny_detect import detect_objects
+from app.yolo_tiny_detect import YoloDetection
+from app.tracker import ObjectTracker
+from app.detection_roi import draw_roi, get_roi_frame
 from config import Config
 from app.utility import *
 
@@ -11,8 +13,7 @@ CAMERA_HEIGHT = Config.CAMERA_HEIGHT
 def detect():
     labels = read_class_names(Config.LABEL)
     interpreter = Interpreter(Config.INTERPRETER)
-    # interpreter.allocate_tensors()
-    # _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
+    YOLO = YoloDetection()
     
     source = Config.SOURCE
     if Config.SOURCE == "0" or Config.SOURCE == "NONE" or not Config.SOURCE:
@@ -28,19 +29,19 @@ def detect():
     
     while cap.isOpened():
         ret, frame = cap.read()
+        if Config.DRAW_ROI:
+            frame = get_roi_frame(frame)
         
         img = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), (416,416))
-        start_time = time.time()
-        boxes, scores, classes, valid_detections = detect_objects(interpreter, img, Config.THERSHOLD)
-        end = time.time() - start_time
-        print("--- {time} seconds ---".format(time=end))
+        boxes, scores, classes, valid_detections = YOLO.detect_objects(interpreter, img)
 
         pred_bbox = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
-        frame = draw_bbox(frame, pred_bbox, classes=labels)
-
-        # fps = int(cap.get(cv2.CAP_PROP_FPS))
-        # cv2.putText(frame, str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 3, cv2.LINE_AA)
+        frame = process(frame, pred_bbox, classes=labels)
         
+
+        if Config.DRAW_ROI:
+            frame = draw_roi(frame, Config.DROI)
+
         if Config.OUTPUT:
             out.write(frame)
 
@@ -50,3 +51,20 @@ def detect():
                 out.release()
                 cap.release()
                 cv2.destroyAllWindows()
+
+def process(image, bboxes, classes):
+    out_boxes, out_scores, out_classes, num_boxes = bboxes
+
+    for i in range(num_boxes[0]):
+        if int(out_classes[0][i]) < 0 or int(out_classes[0][i]) > len(classes): continue
+        coor = out_boxes[0][i]
+        score = out_scores[0][i]
+        class_ind = int(out_classes[0][i])
+
+        image = draw_bbox(coor, image, score, classes, class_ind)
+        # tracker = ObjectTracker().track_object(coor, image)
+        # print(tracker)
+    
+    return image
+
+    
