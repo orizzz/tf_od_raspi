@@ -53,11 +53,12 @@ def _has_crossed_counting_line(bbox, line):
     '''
     Check if at least one edge of a bounding box is intersected by a counting line.
     '''
+    # print(bbox)
     x, y, w, h = bbox
-    bbox_line1 = [(x, y), (x + w, y)]
-    bbox_line2 = [(x + w, y), (x + w, y + h)]
-    bbox_line3 = [(x, y), (x, y + h)]
-    bbox_line4 = [(x, y + h), (x + w, y + h)]
+    bbox_line1 = [(x, y), (w, y)]
+    bbox_line2 = [(w, y), (w, h)]
+    bbox_line3 = [(x, y), (x, h)]
+    bbox_line4 = [(x, h), (w, h)]
 
     if _line_segments_intersect(bbox_line1, line) or \
             _line_segments_intersect(bbox_line2, line) or \

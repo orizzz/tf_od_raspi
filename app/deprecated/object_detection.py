@@ -16,7 +16,6 @@ def get_output_tensor(interpreter, index=0):
   
   output_details = interpreter.get_output_details()
   pred = [interpreter.get_tensor(output_details[i]['index']) for i in range(len(output_details))]
-  print(pred)
   return pred
   # return tensor
 

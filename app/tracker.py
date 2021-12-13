@@ -83,6 +83,7 @@ def add_new_blobs(boxes, classes, confidences, blobs, frame, tracker, mcdf):
     matched_blob_ids = []
     for i, box in enumerate(boxes):
         _type = classes[i]["text"] if classes is not None else None
+        _type_value = classes[i]["value"] if classes is not None else None
         _confidence = confidences[i] if confidences is not None else None
         _tracker = get_tracker(tracker, box, frame)
 
@@ -93,13 +94,12 @@ def add_new_blobs(boxes, classes, confidences, blobs, frame, tracker, mcdf):
                 if _id not in matched_blob_ids:
                     blob.num_consecutive_detection_failures = 0
                     matched_blob_ids.append(_id)
-                blob.update(box, _type, _confidence, _tracker)
+                blob.update(box, _type, _type_value, _confidence, _tracker)
                 break
 
         if not match_found:
-            _blob = Blob(box, _type, _confidence, _tracker)
+            _blob = Blob(box, _type, _type_value, _confidence, _tracker)
             blob_id = generate_object_id()
-            # print(blob_id)
             blobs[blob_id] = _blob
 
     blobs = _remove_stray_blobs(blobs, matched_blob_ids, mcdf)

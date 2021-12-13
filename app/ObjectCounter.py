@@ -3,10 +3,11 @@ from app.util.yolo_tiny_detect import YoloDetection as YOLO
 from app.tracker import *
 from app.util.detection_roi import draw_roi, get_roi_frame
 from config import Config
-from app.utility import *
+from app.utility import read_class_names
+from app.util.draw import DrawUtils
 from app.util.bounding_box import *
 from joblib import Parallel, delayed
-import multiprocessing
+import multiprocessing, json
 from app.counter import attempt_count
 
 
@@ -64,20 +65,14 @@ class ObjectCounter():
     def visualize(self):
         frame = self.frame
         # draw and label blob bounding boxes
-        _bounding_boxes, _confidences, _classes, _num_boxes = self.pred_bbox
-        index = 0
+        # _bounding_boxes, _confidences, _classes, _num_boxes = self.pred_bbox
+
+        draw = DrawUtils(frame)
         for _id, blob in self.blobs.items():
-            frame = draw_bbox(_bounding_boxes[index], frame, _confidences[index], self.label, _classes[index], _id, blob)
+            draw.draw_bbox(_id, blob)
 
         if self.show_counts:
-            draw_lines(frame)
-            offset = 1
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            for line, objects in self.counts.items():
-                cv2.putText(frame, line, (10, 40 * offset), font, 1, (0, 0, 0), 2, cv2.LINE_AA)
-                for label, count in objects.items():
-                    offset += 1
-                    cv2.putText(frame, "{}: {}".format(label, count), (10, 40 * offset), font, 1, (0, 0, 0), 2, cv2.LINE_AA)
-                offset += 2
+            draw.draw_line()
+            draw.draw_counters(self.counts)
 
         return frame
