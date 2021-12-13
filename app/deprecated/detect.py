@@ -2,7 +2,7 @@
 import cv2, time
 from tflite_runtime.interpreter import Interpreter
 from app.object_detection import detect_objects
-from app.yolo_tiny_detect import detect_objects as yolo_detect
+from app.util.yolo_tiny_detect import detect_objects as yolo_detect
 from config import Config
 from app.utility import *
 

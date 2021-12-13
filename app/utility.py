@@ -23,6 +23,16 @@ def get_centroid(bbox):
     x, y, w, h = bbox
     return (round((x + x + w) / 2), round((y + y + h) / 2))
 
+def updatedBbox(coor):
+    # rearrange bbox to match tracker method requirements
+    bbox = (
+        int(coor[1]), 
+        int(coor[0]), 
+        int(coor[3]), 
+        int(coor[2])
+        )
+    return bbox
+
 def draw_bbox(coor, image, score, classes, class_ind, show_label=True):
     num_classes = len(classes)
     hsv_tuples = [(1.0 * x / num_classes, 1., 1.) for x in range(num_classes)]
@@ -30,18 +40,14 @@ def draw_bbox(coor, image, score, classes, class_ind, show_label=True):
     colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
 
     label = classes[class_ind]
-
     image_h, image_w, _ = image.shape
-    coor[0] = int(coor[0] * image_h)
-    coor[2] = int(coor[2] * image_h)
-    coor[1] = int(coor[1] * image_w)
-    coor[3] = int(coor[3] * image_w)
 
     fontScale = 0.3
 
     bbox_color = colors[class_ind]
     bbox_thick = int(0.6 * (image_h + image_w) / 600)
-    c1, c2 = (int(coor[1]), int(coor[0])), (int(coor[3]), int(coor[2]))
+    # c1, c2 = (int(coor[1]), int(coor[0])), (int(coor[3]), int(coor[2]))
+    c1, c2 = (int(coor[0]), int(coor[1])), (int(coor[2]), int(coor[3]))
     cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
 
     if show_label:

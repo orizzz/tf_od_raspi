@@ -7,7 +7,7 @@ env.read_env()
 class Config(object):
     INTERPRETER = env.str("INTERPRETER", default="detect.tflite")
     LABEL = env.str("LABEL", default="data/label.txt")
-    DETECTOR = env.str("DETECTOR", default="YOLO")
+    DETECTOR = env.str("DETECTOR", default="yolo")
 
     CAMERA_WIDTH = env.int("CAMERA_WIDTH", default=640)
     CAMERA_HEIGHT = env.int("CAMERA_HEIGHT", default=480)

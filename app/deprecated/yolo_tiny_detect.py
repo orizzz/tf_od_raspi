@@ -1,6 +1,9 @@
 import numpy as np
+import cv2
+from tflite_runtime.interpreter import Interpreter
 import tensorflow as tf
 from config import Config
+from app.utility import read_class_names
 
 input_size = Config.INPUT_SIZE
 
@@ -8,8 +11,11 @@ class YoloDetection():
     def __init__(self):
         self.threshold = Config.THERSHOLD # current frame of video
         self.iou = Config.IOU
+        self.labels = read_class_names(Config.LABEL)
 
-    def detect_objects(self, interpreter, image):
+    def getBoundingBox(self, image):
+        image = cv2.resize(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), (416,416))
+        interpreter = Interpreter(Config.INTERPRETER)
         interpreter.allocate_tensors()
         input_details = interpreter.get_input_details()
         output_details = interpreter.get_output_details()
@@ -35,6 +41,7 @@ class YoloDetection():
             iou_threshold= self.iou,
             score_threshold= self.threshold
         )
+
         return boxes, scores, classes, valid_detections
 
     def filter_boxes(self, box_xywh, scores, score_threshold=0.4, input_shape = tf.constant([416,416])):
