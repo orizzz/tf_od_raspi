@@ -1,5 +1,6 @@
 import uuid
+import random
 
 
 def generate_object_id():
-    return 'obj_' + uuid.uuid4().hex
+    return str(uuid.uuid4())[0:8]

@@ -75,7 +75,11 @@ class YoloDetection():
 
             new_box.append(list(box))
             new_scores.append(score)
-            new_classes.append(class_ind)
+            new_classes.append(
+                {
+                    "value":class_ind, 
+                    "text": self.labels[class_ind]
+                })
 
         return new_box, new_scores, new_classes, num
 

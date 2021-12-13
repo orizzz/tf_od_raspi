@@ -8,10 +8,15 @@ class Config(object):
     INTERPRETER = env.str("INTERPRETER", default="detect.tflite")
     LABEL = env.str("LABEL", default="data/label.txt")
     DETECTOR = env.str("DETECTOR", default="yolo")
+    TRACKER = env.str("TRACKER", default="kcf")
 
     CAMERA_WIDTH = env.int("CAMERA_WIDTH", default=640)
     CAMERA_HEIGHT = env.int("CAMERA_HEIGHT", default=480)
     INPUT_SIZE = env.int("INPUT_SIZE", default=416)
+
+    MCDF=env.int("MCDF", default=2)
+    MCTF=env.int("MCTF", default=3)
+
     IOU = env.float("IOU", default=0.5)
     THERSHOLD = env.float("THERSHOLD", default=0.5)
 

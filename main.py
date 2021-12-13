@@ -1,10 +1,9 @@
 # from app.detect import detect
-from app.detect import detect
 from app.ObjectCounter import ObjectCounter
 import cv2, time
 from app.util.yolo_tiny_detect import YoloDetection
 # from app.tracker import ObjectTracker
-from app.detection_roi import draw_roi, get_roi_frame
+from app.util.detection_roi import draw_roi, get_roi_frame
 from config import Config
 from app.utility import *
 
@@ -22,17 +21,18 @@ def run():
     retval, frame = cap.read()
     f_height, f_width, _ = frame.shape
 
-    objectCounter = ObjectCounter(frame)
+    objectCounter = ObjectCounter(frame, Config.TRACKER)
 
     if output:
         codec = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(output, codec, 25, (f_width, f_height))
     
     while retval:
-        
-        # YOLO.getBoundingBox(frame)
         objectCounter.count(frame)
-        frame = objectCounter.visualize(frame)
+        frame = objectCounter.visualize()
+
+        if Config.OUTPUT:
+            out.write(frame)
 
         if Config.VISUALIZE:
             cv2.imshow('Pi Feed', frame)

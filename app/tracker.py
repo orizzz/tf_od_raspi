@@ -41,7 +41,7 @@ def get_tracker(algorithm, bounding_box, frame):
     '''
     Fetch a tracker object based on the algorithm specified.
     '''
-
+    # cv2.imshow('Pi Feed', frame)
     if algorithm == 'csrt':
         return _csrt_create(bounding_box, frame)
     if algorithm == 'kcf':
@@ -51,6 +51,19 @@ def get_tracker(algorithm, bounding_box, frame):
     #     'meta': {'label': 'INVALID_TRACKING_ALGORITHM'},
     # })
     sys.exit()
+
+def remove_duplicates(blobs):
+    '''
+    Remove duplicate blobs i.e blobs that point to an already detected and tracked object.
+    '''
+    for blob_id, blob_a in list(blobs.items()):
+        for _, blob_b in list(blobs.items()):
+            if blob_a == blob_b:
+                break
+
+            if get_overlap(blob_a.bounding_box, blob_b.bounding_box) >= 0.6 and blob_id in blobs:
+                del blobs[blob_id]
+    return blobs
 
 def _remove_stray_blobs(blobs, matched_blob_ids, mcdf):
     '''
@@ -63,13 +76,13 @@ def _remove_stray_blobs(blobs, matched_blob_ids, mcdf):
             del blobs[blob_id]
     return blobs
 
-def add_new_blobs(boxes, classes, confidences, blobs, frame, tracker, mcdf=2):
+def add_new_blobs(boxes, classes, confidences, blobs, frame, tracker, mcdf):
     '''
     Add new blobs or updates existing ones.
     '''
     matched_blob_ids = []
     for i, box in enumerate(boxes):
-        _type = classes[i] if classes is not None else None
+        _type = classes[i]["text"] if classes is not None else None
         _confidence = confidences[i] if confidences is not None else None
         _tracker = get_tracker(tracker, box, frame)
 
@@ -86,7 +99,21 @@ def add_new_blobs(boxes, classes, confidences, blobs, frame, tracker, mcdf=2):
         if not match_found:
             _blob = Blob(box, _type, _confidence, _tracker)
             blob_id = generate_object_id()
+            # print(blob_id)
             blobs[blob_id] = _blob
 
     blobs = _remove_stray_blobs(blobs, matched_blob_ids, mcdf)
     return blobs
+
+def update_blob_tracker(blob, blob_id, frame):
+    '''
+    Update a blob's tracker object.
+    '''
+    success, box = blob.tracker.update(frame)
+    if success:
+        blob.num_consecutive_tracking_failures = 0
+        blob.update(box)
+    else:
+        blob.num_consecutive_tracking_failures += 1
+
+    return (blob_id, blob)
