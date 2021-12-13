@@ -18,7 +18,7 @@ def get_roi_data(polygon):
     res = [eval(x) for x in res]
     return res
 
-def draw_roi(frame, polygon):
+def draw_roi(frame, polygon=Config.DROI):
     polygon = get_roi_data(polygon)
     frame_overlay = frame.copy()
     polygon = np.array([polygon], dtype=np.int32)

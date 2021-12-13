@@ -17,7 +17,11 @@ class Config(object):
 
     SOURCE = env.str("SOURCE", default=0)
     OUTPUT = env.str("OUTPUT", default=None)
+    
     VISUALIZE = env.bool("VISUALIZE", default=True)
     LINE = env.str("LINE")
+    DRAW_LINE = env.bool("DRAW_LINE", default=True)
+
     DROI = env.str("DROI")
+    USE_DROI = env.bool("USE_DROI", default=True)
     DRAW_ROI = env.bool("DRAW_ROI", default=True)

@@ -10,11 +10,11 @@ def read_class_names(class_file_name):
     return names
 
 def draw_lines(frame):
-  LINE = json.loads(Config.LINE)
-  for item in LINE:
-    start = (item["line"][0][0], item["line"][0][1])
-    end = (item["line"][1][0], item["line"][1][1])
-    cv2.line(frame, start, end, (0,255,0), 3)
+    LINE = json.loads(Config.LINE)
+    for item in LINE:
+      start = (item["line"][0][0], item["line"][0][1])
+      end = (item["line"][1][0], item["line"][1][1])
+      cv2.line(frame, start, end, (0,255,0), 3)
 
 def get_centroid(bbox):
     '''

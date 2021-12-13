@@ -29,18 +29,23 @@ def detect():
     
     while cap.isOpened():
         ret, frame = cap.read()
-        if Config.DRAW_ROI:
-            frame = get_roi_frame(frame)
+        if Config.USE_DROI:
+            droi_frame = get_roi_frame(frame)
+            img = cv2.resize(cv2.cvtColor(droi_frame, cv2.COLOR_BGR2RGB), (416,416))
+        else:
+            img = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), (416,416))
         
-        img = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), (416,416))
+
         boxes, scores, classes, valid_detections = YOLO.detect_objects(interpreter, img)
 
         pred_bbox = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
         frame = process(frame, pred_bbox, classes=labels)
-        
 
-        if Config.DRAW_ROI:
+        if Config.USE_DROI and Config.DRAW_ROI:
             frame = draw_roi(frame, Config.DROI)
+        
+        if Config.DRAW_LINE:
+            draw_lines(frame)
 
         if Config.OUTPUT:
             out.write(frame)
