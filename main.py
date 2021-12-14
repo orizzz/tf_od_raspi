@@ -23,6 +23,9 @@ def run():
 
     objectCounter = ObjectCounter(frame, Config.TRACKER)
 
+    frames_count = round(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frames_processed = 0
+
     if output:
         codec = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(output, codec, 30, (f_width, f_height))
@@ -30,7 +33,7 @@ def run():
         while retval:
             objectCounter.count(frame)
             frame = objectCounter.visualize()
-            print(retval)
+            print(f'percentage_processed: {round((frames_processed / frames_count) * 100, 2)}%')
 
             if Config.OUTPUT:
                 out.write(frame)
@@ -41,14 +44,12 @@ def run():
                     out.release()
                     cap.release()
                     cv2.destroyAllWindows()
+            frames_processed += 1
             retval, frame = cap.read()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         print('keyboard Interrupted')
         print('Stop')
-        # try:
-        #     sys.exit(0)
-        # except SystemExit:
-        #     os._exit(0)
+        print(e)
     finally:
         result = objectCounter.counts
         for key, value in result.items():
