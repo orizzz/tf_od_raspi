@@ -56,7 +56,7 @@ class ObjectCounter():
             # rerun detection
             _bounding_boxes, _confidences, _classes,  _num_boxes = YOLO().getBoundingBox(self.frame)
             self.pred_bbox = [_bounding_boxes, _confidences, _classes, _num_boxes]
-            self.blobs = add_new_blobs(_bounding_boxes, _classes, _confidences, self.blobs, self.frame, tracker='kcf', mcdf=2)
+            self.blobs = add_new_blobs(_bounding_boxes, _classes, _confidences, self.blobs, self.frame, self.tracker, self.mcdf)
             self.blobs = remove_duplicates(self.blobs)
             self.frame_count = 0
 
